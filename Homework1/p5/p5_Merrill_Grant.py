@@ -1,27 +1,41 @@
 def caesar_cipher(text, shift):
-    """Shift each alphabetic character in text by the given integer shift."""
-    result = ""
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    encrypted = ""
 
     for char in text:
         if char.isalpha():
-            start = ord('A') if char.isupper() else ord('a')
-            offset = (ord(char) - start + shift) % 26
-            result += chr(start + offset)
-        else:
-            result += char
+            is_upper = char.isupper()
+            lowercase_char = char.lower()
+            index = alphabet.index(lowercase_char)
+            new_index = (index + shift) % 26
+            shifted_char = alphabet[new_index]
 
-    return result
+            if is_upper:
+                encrypted += shifted_char.upper()
+            else:
+                encrypted += shifted_char
+        else:
+            encrypted += char
+
+    return encrypted
 
 
 def caesar_decipher(cyphertext, shift):
-    """Decrypt a Caesar-encrypted string by shifting letters backward."""
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
     clear = ""
 
     for char in cyphertext:
         if char.isalpha():
-            start = ord('A') if char.isupper() else ord('a')
-            offset = (ord(char) - start - shift) % 26
-            clear += chr(start + offset)
+            is_upper = char.isupper()
+            lowercase_char = char.lower()
+            index = alphabet.index(lowercase_char)
+            new_index = (index - shift) % 26
+            shifted_char = alphabet[new_index]
+
+            if is_upper:
+                clear += shifted_char.upper()
+            else:
+                clear += shifted_char
         else:
             clear += char
 
@@ -29,58 +43,64 @@ def caesar_decipher(cyphertext, shift):
 
 
 def letter_frequency(text):
-    """Count how many times each letter appears in the text, ignoring case and non-letters."""
-    counts = {chr(code): 0 for code in range(ord('a'), ord('z') + 1)}
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    counts = {}
+
+    for letter in alphabet:
+        counts[letter] = 0
 
     for char in text:
         if char.isalpha():
-            letter = char.lower()
-            counts[letter] += 1
+            lowercase_char = char.lower()
+            counts[lowercase_char] += 1
 
     return counts
 
 
 def main():
-    """Display a simple menu for Caesar cipher operations."""
+    text = ""
+    shift = 0
+
     print("Caesar Cipher Menu")
     print("1. Enter a message")
     print("2. Enter a shift value")
-    print("3. View encrypted text, letter frequency, and decrypted text")
+    print("3. Display encrypted text, letter frequency, and deciphered text")
     print("4. Exit")
 
-    message = ""
-    shift = 0
-
     while True:
-        choice = input("\nSelect an option (1-4): ")
+        choice = input("\nChoose an option: ")
 
         if choice == "1":
-            message = input("Enter a message: ")
+            text = input("Enter a message: ")
             print("Message saved.")
+
         elif choice == "2":
-            try:
-                shift = int(input("Enter a shift value: "))
-                print("Shift saved.")
-            except ValueError:
-                print("Invalid shift. Please enter an integer.")
+            while True:
+                shift_input = input("Enter a shift value (integer): ")
+                try:
+                    shift = int(shift_input)
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a valid integer.")
+
         elif choice == "3":
-            if message == "":
+            if text == "":
                 print("Please enter a message first.")
-                continue
+            else:
+                cyphertext = caesar_cipher(text, shift)
+                frequencies = letter_frequency(text)
+                clear = caesar_decipher(cyphertext, shift)
 
-            encrypted = caesar_cipher(message, shift)
-            frequencies = letter_frequency(message)
-            decrypted = caesar_decipher(encrypted, shift)
+                print("\nEncrypted text:", cyphertext)
+                print("Letter frequency:")
+                for letter in frequencies:
+                    print(f"{letter}: {frequencies[letter]}")
+                print("Deciphered text:", clear)
 
-            print("\nCiphered text:", encrypted)
-            print("Letter frequency:")
-            for letter, count in frequencies.items():
-                if count > 0:
-                    print(f"  {letter}: {count}")
-            print("Deciphered text:", decrypted)
         elif choice == "4":
             print("Goodbye!")
             break
+
         else:
             print("Invalid option. Please choose 1, 2, 3, or 4.")
 
