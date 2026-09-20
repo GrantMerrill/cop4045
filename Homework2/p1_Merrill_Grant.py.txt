@@ -1,0 +1,181 @@
+0. # Grant Merrill --- Z23813057
+
+1. 
+
+2. # === Problem 1: Parse Python Files ===
+
+3. from operator import itemgetter
+
+4. 
+
+5. # === line_number Function ===
+
+6. def line_number(rfile : str, wfile : str):
+
+7.     """Reads the first file and writes each line to the second file with a line number prefix"""
+
+8.     try:
+
+9.         rfile = open(rfile, "r")
+
+10.         wfile = open(wfile, "w")
+
+11.         
+
+12.         # Create new lines that are numbered
+
+13.         for n, line in enumerate(rfile):
+
+14.             newline = f"{n}. {line}"
+
+15.             print(newline, file=wfile)
+
+16.         
+
+17.         rfile.close()
+
+18.         wfile.close()
+
+19.     
+
+20.     # Handle exceptions
+
+21.     except Exception as error:
+
+22.         print(f"Error parsing file: {error}")
+
+23.         raise
+
+24. 
+
+25. # === parsing_functions Function ===     
+
+26. def parse_functions(parsefile : str):
+
+27.     """Reads and parses a string representing a .py file and returns a tuple with function information."""
+
+28.     try:
+
+29.         file = open(parsefile, "r")
+
+30.         lines = file.readlines()
+
+31.         
+
+32.         # Find the line number of every function definition
+
+33.         indexes = [num for num, line in enumerate(lines, 1) if line.startswith("def")]
+
+34.         
+
+35.         functions = []
+
+36.         
+
+37.         # Loop through each function
+
+38.         for i in range(len(indexes)):
+
+39.             
+
+40.             # Use the line numbers to know where this function starts
+
+41.             start = indexes[i]
+
+42.             
+
+43.             # To figure out where the function ends, use the next element in the indexes list
+
+44.             if i + 1 < len(indexes):
+
+45.                 end = indexes[i + 1]
+
+46.             else:
+
+47.                 # Telling the program that this function continues until the last line
+
+48.                 end = len(lines) + 1
+
+49.                 
+
+50.             # Saving the line with the function definition
+
+51.             element = lines[start - 1]
+
+52.             
+
+53.             # Collect the function information
+
+54.             number = start
+
+55.             name = element[3:].split("(")[0].strip()
+
+56.             arguments = element.split("(")[1].split(")")[0]
+
+57.             
+
+58.             # Building the string containing all the function code
+
+59.             code = ""
+
+60.             
+
+61.             for num in range(start, end):
+
+62.                 line = lines[num - 1]
+
+63.                 
+
+64.                 # Skip over the empty lines and the comments
+
+65.                 if line.strip() == "" or line.strip().startswith("#"):
+
+66.                     continue
+
+67.                 
+
+68.                 # Add any valid line to the code variable
+
+69.                 code += line
+
+70.                 
+
+71.             # Store the function information
+
+72.             functions.append((number, name, arguments, code))
+
+73.             
+
+74.         # Sort the functions alphabetically by the name
+
+75.         # Used 7.3.2 List Methods' sorted and itemgetter to sort.
+
+76.         sorted(functions, key=itemgetter(1))
+
+77.         
+
+78.         file.close()
+
+79.         
+
+80.         return tuple(functions)
+
+81. 
+
+82.     # Handle exceptions
+
+83.     except Exception as error:
+
+84.         print(f"Error parsing file: {error}")
+
+85.         raise
+
+86. 
+
+87. # === Main ===
+
+88. print("Grant Merrill --- Z23813057\n")
+
+89. line_number("p1_Merrill_Grant.py", "p1_Merrill_Grant.py.txt")
+
+90. print(parse_functions("p1_Merrill_Grant.py"))
