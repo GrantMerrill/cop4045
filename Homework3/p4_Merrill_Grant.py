@@ -1,6 +1,7 @@
 # Grant Merrill --- Z23813057
 
 # === Problem 4: Non-Interactive Text Editor ===
+from testif import testif
 
 # ==================== ed_read() Function ====================
 def ed_read(filename: str, frm: int = 0, to: int = -1) -> str:
@@ -162,23 +163,147 @@ def ed_append(filename: str, string: str) -> int:
 
 
 
-# ==================== Running Program ====================
-print('Grant Merrill --- Z23813057')
-fn = "p4_Merrill_Grant_file.txt"
-
-ed_append(fn, "0123456789")
-ed_append(fn, "0123456789")
-
-print(ed_read(fn, 3, 9))
-print(ed_read(fn, 3))
-
-# Commented out test for ed_read function IndexError
-#print(ed_read(fn, 3, 24)) 
-
-lst = ed_find(fn, "345")
-print(lst)
-print(ed_find(fn, "356"))
-
-ed_replace(fn, "345", "ABCDE", 1)
-
-ed_replace(fn, "345", "ABCDE")
+# ==================== test_ed_find() Function ====================
+def test_ed_find() -> None:
+    """Tests the ed_find() function using testif()."""
+    
+    filename = "test_ed_find.txt"
+    
+    # Create test file
+    file = open(filename, "w")
+    file.write("abctestdeftestghitest")
+    file.close()
+    
+    # Test multiple occurrences
+    testif(
+        ed_find(filename, "test") == [3, 10, 17],
+        "ed_find Multiple Occurrences Test",
+        "Correct positions returned.",
+        "Incorrect positions returned.")
+    
+    # Test an occurrence at position 0
+    file = open(filename, "w")
+    file.write("testabctest")
+    file.close()
+    
+    testif(
+        ed_find(filename, "test") == [0, 7],
+        "ed_find Occurrence at Index Position 0 Test",
+        "Correctly found occurrence at position 0",
+        "Failed to find occurrence at position 0")
+    
+    # Test string not found
+    testif(
+        ed_find(filename, "xyz") == [],
+        "ed_find String Not Found Test",
+        "Correctly returned an empty list.",
+        "Failed to return an empty list.")
+    
+    
+    
+# ==================== test_ed_replace() Function ====================
+def test_ed_replace() -> None:
+    """Tests the ed_replace() function using testif()."""
+    
+    filename = "test_ed_replace.txt"
+    
+    # Test replacing all occurrences
+    file = open(filename, "w")
+    file.write("01234567890123456789")
+    file.close()
+    
+    count = ed_replace(filename, "345", "ABCDE")
+    
+    testif(
+        count == 2,
+        "ed_replace All Occurrences Count Test",
+        "Correct replacement count returned.",
+        "Incorrect replacement count.")
+    
+    testif(
+        ed_read(filename) == "012ABCDE6789012ABCDE6789",
+        "ed_replace Replace All Occurrences Test",
+        "All occurrences replaced correctly.",
+        "All occurrences were not replaced correctly.")
+    
+    # Assuming a file reset
+    file = open(filename, "w")
+    file.write("01234567890123456789")
+    file.close()
+    
+    # Test replacing a specific occurrence
+    count = ed_replace(filename, "345", "ABCDE", 1)
+    
+    testif(
+        count == 1,
+        "ed_replace Specific Occurrence Count Test",
+        "Correct replacement count returned.",
+        "Incorrect replacement count.")
+    
+    testif(
+        ed_read(filename) == "0123456789012ABCDE6789",
+        "ed_replace Specific Occurrence Test",
+        "Correct ccurrence replaced.",
+        "Incorrect occurrence replaced.")
+    
+    # Test occurrence does not exist
+    file = open(filename, "w")
+    file.write("0123456789")
+    file.close()
+    
+    count = ed_replace(filename, "345", "ABCDE", 5)
+    
+    testif(
+        count == 0,
+        "ed_replace Invalid Occurrence Count Test",
+        "Correctly returned zero",
+        "Did not return zero.")
+    
+    testif(
+        ed_read(filename) == "0123456789",
+        "ed_replace Invalid Occurrence Test",
+        "File was not changed.",
+        "File was incorrectly changed.")
+    
+    
+    
+# ==================== main() function ====================
+def main() -> None:
+    """Demonstrates the use of all functions.
+    
+    Calls ed_read(), ed_find(), ed_replace(), and ed_append()
+    using a sample test file."""
+    
+    filename = "p4_Merrill_Grant_file.txt"
+    
+    # Append text to the file
+    ed_append(filename, "0123456789")
+    ed_append(filename, "0123456789")
+    
+    # Read a portion of the file
+    print("\ned_read(3, 9): ", ed_read(filename, 3, 9))
+    
+    # Read from a specified position to the end of the file
+    print("ed_read(3): ", ed_read(filename, 3))
+    
+    # Find all occurrences of a string
+    print("ed_find('345'): ", ed_find(filename, "345"))
+    
+    # Find a string that does not exist
+    print("ed_find('356'): ", ed_find(filename, "356"))
+    
+    # Replace a specific instance
+    print("Replacements: ", ed_replace(filename, "345", "ABCDE", 1))
+    
+    # Replace all occurrence
+    print("Replacements: ", ed_replace(filename, "345", "ABCDE"))
+    
+# ==================== main() function ====================
+if __name__ == "__main__":
+    print('Grant Merrill --- Z23813057')
+    
+    # Call the different test functions
+    test_ed_find()
+    test_ed_replace()
+    
+    main()
